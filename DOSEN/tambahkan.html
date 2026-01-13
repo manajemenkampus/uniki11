@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Dosen</title>
+    <link rel="stylesheet" href="tambahkan.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Data Dosen</h1>
+
+    <!-- Form Input / Edit -->
+    <div class="form-box">
+        <h2>Form Data Dosen</h2>
+        <form id="dosenForm">
+            <input type="hidden" id="editIndex">
+            <input type="text" id="nidn" placeholder="NIDN" required>
+            <input type="text" id="nama" placeholder="Nama Dosen" required>
+            <input type="text" id="prodi" placeholder="Program Studi" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <button type="submit">Simpan</button>
+        </form>
+    </div>
+  <script>
+let no = 2;
+
+document.getElementById("dosenForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const nidn = document.getElementById("nidn").value;
+    const nama = document.getElementById("nama").value;
+    const prodi = document.getElementById("prodi").value;
+    const email = document.getElementById("email").value;
+    const editIndex = document.getElementById("editIndex").value;
+
+    if (editIndex === "") {
+        // Tambah data baru
+        const tabel = document.getElementById("tabelDosen");
+        const row = tabel.insertRow();
+
+        row.innerHTML = `
+            <td>${no++}</td>
+            <td>${nidn}</td>
+            <td>${nama}</td>
+            <td>${prodi}</td>
+            <td>${email}</td>
+            <td>
+                <button class="btn-edit" onclick="editDosen(this)">Edit</button>
+            </td>
+        `;
+    } else {
+        // Simpan hasil edit
+        const row = document.getElementById("tabelDosen").rows[editIndex];
+        row.cells[1].innerText = nidn;
+        row.cells[2].innerText = nama;
+        row.cells[3].innerText = prodi;
+        row.cells[4].innerText = email;
+
+        document.getElementById("editIndex").value = "";
+    }
+
+    document.getElementById("dosenForm").reset();
+});
+
+function editDosen(button) {
+    const row = button.parentElement.parentElement;
+    const index = row.rowIndex - 1;
+
+    document.getElementById("nidn").value = row.cells[1].innerText;
+    document.getElementById("nama").value = row.cells[2].innerText;
+    document.getElementById("prodi").value = row.cells[3].innerText;
+    document.getElementById("email").value = row.cells[4].innerText;
+    document.getElementById("editIndex").value = index;
+}
+</script>
+
+<form id="formDosen">
+  <input type="text" id="nama" placeholder="NIDN" required>
+  <input type="text" id="nidn" placeholder="Nama Dosen" required>
+  <input type="text" id="prodi" placeholder="Program Studi" required>
+  <button type="submit">Simpan</button>
+</form>
+
+<script src="tambahkan.js"></script>
+
+</body>
+</html>

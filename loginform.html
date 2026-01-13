@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 400px; margin: 50px auto; padding: 20px; }
+        .login-container { background: #f5f5f5; padding: 30px; border-radius: 10px; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; }
+        button { background: #4285f4; color: white; border: none; cursor: pointer; }
+        button:hover { background: #357ae8; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .error { color: red; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login Sistem</h2>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit" id="loginBtn">Login</button>
+        </form>
+        <div id="errorMessage" class="error"></div>
+    </div>
+
+    <script>
+        // ==================== FIREBASE CONFIG ====================
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyBSVWxCcvR3gtamwQNcSTHN1Z7fMSjwaiI",
+            authDomain: "final-c1d8d.firebaseapp.com",
+            projectId: "final-c1d8d",
+            storageBucket: "final-c1d8d.firebasestorage.app",
+            messagingSenderId: "596660533464",
+            appId: "1:596660533464:web:95e022a340e8f701cd3fad",
+            measurementId: "G-8GE0GXSZ03"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        // ==================== END FIREBASE CONFIG ====================
+
+        // ==================== LOGIN LOGIC ====================
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Validasi input
+            if (!email || !password) {
+                errorMessage.textContent = "Email dan password harus diisi";
+                return;
+            }
+            
+            // Tampilkan loading
+            const originalText = loginBtn.textContent;
+            loginBtn.textContent = "Sedang login...";
+            loginBtn.disabled = true;
+            errorMessage.textContent = "";
+            
+            // Firebase Authentication
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Login berhasil
+                    console.log("Login berhasil");
+                    window.location.href = "dashboard.html";
+                })
+                .catch((error) => {
+                    // Handle error
+                    console.error("Error:", error);
+                    
+                    let errorMsg = "Login gagal. ";
+                    switch(error.code) {
+                        case 'auth/user-not-found':
+                            errorMsg += "Email tidak terdaftar";
+                            break;
+                        case 'auth/wrong-password':
+                            errorMsg += "Password salah";
+                            break;
+                        case 'auth/invalid-email':
+                            errorMsg += "Format email tidak valid";
+                            break;
+                        default:
+                            errorMsg += error.message;
+                    }
+                    
+                    errorMessage.textContent = errorMsg;
+                    loginBtn.textContent = originalText;
+                    loginBtn.disabled = false;
+                });
+        });
+
+        // Cek status login saat halaman dimuat
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // Jika sudah login, langsung ke dashboard
+                window.location.href = "dashboard.html";
+            }
+        });
+    </script>
+</body>
+</html>
